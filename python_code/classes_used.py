@@ -8,7 +8,7 @@ in the UI setup
 """
 
 # proper division for python 2.7
-from __future__ import division
+
 
 # Usual importing stuff for PySide
 from PySide.QtGui import *
@@ -50,10 +50,10 @@ class ParametersChange(QDialog, parameters_change.Ui_Dialog):
                 ('slope', self.SlopeEdit.text())
                 ]
         
-        valid_prs = filter(lambda x: x[1].isdigit(), pairs)
+        valid_prs = [x for x in pairs if x[1].isdigit()]
         for pair in valid_prs:
             answer = self.pump.property_set(*pair)
-            print "In ParametersChange:\nasnwer = {0},value = {1}".format(answer, pair[1])
+            print("In ParametersChange:\nasnwer = {0},value = {1}".format(answer, pair[1]))
 
 class HistoryDialog(QDialog, history_settings.Ui_Dialog):
     def __init__(self, pump, parent = None):
@@ -85,7 +85,7 @@ class HistoryDialog(QDialog, history_settings.Ui_Dialog):
         wanted = self.pump.history
         wanted_string = ''
         if self.user_com_btn.isChecked():
-            wanted = filter(lambda x: '?' not in x, self.pump.history)
+            wanted = [x for x in self.pump.history if '?' not in x]
         if self.commands_only.isChecked():
             for i in wanted:
                 wanted_string += "{}\\r\n".format(i[:-1])
@@ -158,7 +158,7 @@ class ReportsDialog(QDialog, python_settings.Ui_Dialog):
 
             self.refresh_interval_edit.setText("%s"\
                     % int((self.window.refreshQtimer.interval() / 1000)))
-            print "Timer interval Set: {} microseconds".format(eval(text) * 1000)
+            print("Timer interval Set: {} microseconds".format(eval(text) * 1000))
         else: 
             QMessageBox.warning(self, self.__appname__, "Not a valid input")
 
@@ -242,7 +242,7 @@ class SyringePickDialog(QDialog, syringe_pick.Ui_Dialog):
     def select_new_syringe(self):
         """Passes the selected item into the connect_new method of the pump."""
         syringe = int(self.listWidget.currentItem().text().split()[0])
-        print "the syringe size is {0}, type: {1}".format(syringe, type(syringe))
+        print("the syringe size is {0}, type: {1}".format(syringe, type(syringe)))
         self.pump.own_status["syringe_size"] = syringe
         text = "Syringe size is set to {size}".format(size = self.pump.own_status["syringe_size"])
         self.window.command_label.setText(text)

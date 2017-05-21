@@ -1,7 +1,7 @@
 #  Thu May 29 02:59:41 EEST 2014, nickkouk
 
 # proper division for python 2.7
-from __future__ import division
+
 
 # Usual importing stuff for PySide
 from PySide.QtGui import *
@@ -37,7 +37,7 @@ class ParametersChange(QDialog, parameters_change.Ui_Dialog):
         
         for pair in pairs:
             if pair[1].isdigit():
-                print "Pair[1] {}".format(pair[1])
+                print("Pair[1] {}".format(pair[1]))
                 self.pump.property_set(*pair)
 
 class HistoryDialog(QDialog, history_settings.Ui_Dialog):
@@ -140,7 +140,7 @@ class ReportsDialog(QDialog, python_settings.Ui_Dialog):
 
             self.refresh_interval_edit.setText("%s"\
                     % int((self.window.refreshQtimer.interval() / 1000)))
-            print "Timer interval Set: {} microseconds".format(eval(text) * 1000)
+            print("Timer interval Set: {} microseconds".format(eval(text) * 1000))
         else: 
             QMessageBox.warning(self, self.__appname__, "Not a valid input")
 
@@ -201,7 +201,7 @@ class SyringePickDialog(QDialog, device_configuration.Ui_Dialog):
         """Passes the selected item into the connect_new method of the pump."""
         syringe = self.listWidget.currentItem().text().split()[0]
         self.pump.syringe_size = syringe
-        print "syringe is set to {size}".format(size = self.pump.syringe_size)
+        print("syringe is set to {size}".format(size = self.pump.syringe_size))
 
 class AboutDialog(QDialog, about_dialog.Ui_Form):
 

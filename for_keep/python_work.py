@@ -14,7 +14,7 @@ are implemented while the Model behavior is implemented in the imported module:
 # Sat May 24 10:57:50 EEST 2014, nickkouk
 
 # proper division for python 2.7
-from __future__ import division
+
 
 # Usual importing stuff
 from PySide.QtGui import *
@@ -182,7 +182,7 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
                 self.plung_pos += steps
                 #self.ser.write(self.addr + 'P' + steps + self.term)
 
-        print "Plunger Position: {}".format(self.plung_pos)
+        print("Plunger Position: {}".format(self.plung_pos))
     
 
 

@@ -8,14 +8,14 @@ the way the user interacts with it (GUI, CLI, etc).
 
 """
 
-from __future__ import division
+
 import serial
 import threading
 import sys
 from exceptions_module import BusyPump
 import time
 import signal
-import Queue
+import queue
 
 class Pump():
     def __init__(self, addr, com = 'serial'):
@@ -35,8 +35,8 @@ class Pump():
 
 
         # sending mechanism
-        self.questions_out = Queue.Queue(-1)
-        self.answers_ret = Queue.Queue(-1)
+        self.questions_out = queue.Queue(-1)
+        self.answers_ret = queue.Queue(-1)
         self.answers_lock = threading.Lock()
 
         # Dictionary for holding the pump properties
@@ -71,7 +71,7 @@ class Pump():
         # Start the delivery thread
         self.deliveryThread = delivery_thread(self)
         self.deliveryThread.start()
-        print "THREAD STARTED"
+        print("THREAD STARTED")
 
 
         self.ser = serial.Serial()
@@ -91,16 +91,16 @@ class Pump():
         except serial.SerialException:
             # Might be a bug when ran on Windows!
             if sys.platform[:2] == win:
-                print "The OS used is Windows %s" % sys.platform()
+                print("The OS used is Windows %s" % sys.platform())
                 time.sleep(1)
             else:
-                print "The System is not Windows"
+                print("The System is not Windows")
                 self.ser = serial.serial_for_url('loop://',\
                         timeout = self.timeout_time)
 
 
         finally:
-            print "In the Finally Statement"
+            print("In the Finally Statement")
             self.initialize_pump()
 
 
@@ -118,7 +118,7 @@ class Pump():
             commands = ['Y', 'S10']
         for command in commands:
             self.send_Command(command, 10)
-        print "FIRST 2 SENT_COMMAND SEEEENT!"
+        print("FIRST 2 SENT_COMMAND SEEEENT!")
 
         # Actions after every initialization
         self.history = [ ]
@@ -143,7 +143,7 @@ class Pump():
         min_value, max_value = self.correspondance[a_property][1:]
         if value >= min_value and value <= max_value:
             # Sending the Command to the queue
-            print "SENDING THE COMMAND"
+            print("SENDING THE COMMAND")
             command = self.correspondance[a_property][0]
             value = "%s" %value
             return_stat = self.send_Command("{}".format(\
@@ -244,7 +244,7 @@ class Pump():
         self.send_Command('T')
 
     def stop_thread(self, signum=0, fname=0):
-        print "C-c caught!!"
+        print("C-c caught!!")
         self.stop_flag = True
         self.update_Thread.stop()
         sys.exit(1)
@@ -275,14 +275,14 @@ class Pump():
             if bits_to_read:
                 #print "Send_Command| in the answers_ret Queue"
                 answer = self.answers_ret.get(timeout = 1)
-                print "Got back the answer {}".format(answer)
+                print("Got back the answer {}".format(answer))
                 self.answers_lock.release()
                 return answer
 
             self.answers_lock.release()
         except:
-            print "ERROR in SEND_COMMAND:"
-            print sys.exc_info()[0]
+            print("ERROR in SEND_COMMAND:")
+            print(sys.exc_info()[0])
 
 
 
@@ -324,10 +324,10 @@ class delivery_thread(threading.Thread):
                 answer = self.pump.ser.read(10)
                 self.forGivingBack.put(answer)
                 
-                print "SENT the command: {}".format(com_to_send)
+                print("SENT the command: {}".format(com_to_send))
 
-            except Queue.Empty:
-                print "ITS EMPTY"
+            except queue.Empty:
+                print("ITS EMPTY")
                 #print "Unexpected Error!! {}".format(sys.exc_info()[0])
                 pass
 

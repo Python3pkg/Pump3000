@@ -12,7 +12,7 @@ are implemented while the Model behavior is implemented in the imported module:
 
 
 # proper division for python 2.7
-from __future__ import division
+
 
 # Usual importing stuff for PySide
 from PySide.QtGui import *
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
             # Close open file descriptors
             for a_file in self.open_files:
                 a_file.close()
-                print "closing {}".format(a_file)
+                print("closing {}".format(a_file))
             self.close()
 
     def save_btn(self):
@@ -257,11 +257,11 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
     def run_script(self):
         text = self.textEdit.toPlainText()
         script_commands = text.split('\n')
-        print script_commands
-        script_commands = filter(lambda x: x != '', script_commands)
+        print(script_commands)
+        script_commands = [x for x in script_commands if x != '']
         for i in range(len(script_commands)):
             script_commands[i] = "self." + script_commands[i]
-            print script_commands[i]
+            print(script_commands[i])
             eval(script_commands[i])
     def clear_editor(self):
         self.textEdit.clear()
@@ -288,7 +288,7 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
 
         self.refreshQtimer.stop()
         self.refresh_status = False
-        print "TIMER closed"
+        print("TIMER closed")
 
 
 

@@ -40,7 +40,7 @@ are implemented while the Model behavior is implemented in the imported module: 
 
 
 # proper division for python 2.7
-from __future__ import division
+
 
 # Usual importing stuff for PySide
 from PySide.QtGui import *
@@ -256,7 +256,7 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
             # Close open file descriptors
             for a_file in self.open_files:
                 a_file.close()
-                print "closing {}".format(a_file)
+                print("closing {}".format(a_file))
             self.pump.stop_thread()
             self.close()
 
@@ -305,24 +305,24 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
         self.pump.exc_mode = 'editor'
         text = self.textEdit.toPlainText() #Grab the commands
         script_commands = text.split('\n')
-        script_commands = filter(lambda x: x != '' and not x.startswith('#'), script_commands) #remove the empty lines & the # lines
-        print "*****\nPump3000.py -> run_script: script_commands = {}\n*****".format(script_commands)
+        script_commands = [x for x in script_commands if x != '' and not x.startswith('#')] #remove the empty lines & the # lines
+        print("*****\nPump3000.py -> run_script: script_commands = {}\n*****".format(script_commands))
         try:
             self.pump.update_values()
             for i in range(len(script_commands)):
                 if script_commands[i][:4] == 'pump':
                     eval("self." + script_commands[i])
-                    print "self.%s" %script_commands[i]
+                    print("self.%s" %script_commands[i])
                 elif script_commands[i][0] == '/':
                     self.pump.send_Command(script_commands[i]) 
                 elif script_commands[i][:4] == 'wait':
                     self.pump.send_Command(script_commands[i])
                 else:
                     # TODO The user currently may not issue common python commands yet
-                    print "Command #{0}: {1}".format(i, script_commands[i])
+                    print("Command #{0}: {1}".format(i, script_commands[i]))
                     eval(script_commands[i])
         except:
-            print "Pump3000>run_script>except::\n\t{}".format(sys.exc_info()[0])
+            print("Pump3000>run_script>except::\n\t{}".format(sys.exc_info()[0]))
 
     def back_to_interactive(self):
         self.pump.change_mode('interactive')
@@ -376,7 +376,7 @@ class MainWindow(QMainWindow, python_gui.Ui_MainWindow):
 
         self.refreshQtimer.stop()
         self.refresh_status = False
-        print "***Refresh timer closed***"
+        print("***Refresh timer closed***")
 
     # Enabling the volume button
     def enable_button(self):

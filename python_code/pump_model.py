@@ -11,7 +11,7 @@ the way the user interacts with it (GUI, CLI, etc).
 
 # Imports 
 
-from __future__ import division
+
 __import__('serial.urlhandler.protocol_loop') # Special import, needed for py2exe
 import serial
 import threading
@@ -19,7 +19,7 @@ import sys
 from exceptions_module import BusyPump
 import time
 import signal
-import Queue
+import queue
 
 class Pump():
     def __init__(self, addr, com = 'serial'):
@@ -40,8 +40,8 @@ class Pump():
 
         # sending mechanism
         self.exc_mode = 'interactive'
-        self.questions_out = Queue.Queue(-1)
-        self.answers_ret = Queue.Queue(-1)
+        self.questions_out = queue.Queue(-1)
+        self.answers_ret = queue.Queue(-1)
         self.answers_lock = threading.Lock()
         self.update_sema = threading.Semaphore(value=1)
 
@@ -78,7 +78,7 @@ class Pump():
         # Start the delivery thread
         self.deliveryThread = delivery_thread(self)
         self.deliveryThread.start()
-        print "THREAD STARTED"
+        print("THREAD STARTED")
 
 
         self.connect_new(port_name = 'loop://')
@@ -99,7 +99,7 @@ class Pump():
             self.ser = sys.modules['serial.urlhandler.protocol_loop'].Serial('loop://',\
                 timeout = self.timeout_time)
         except:
-            print "pump_model>connect_new>except\n\t{}".format(sys.exc_info()[0])
+            print("pump_model>connect_new>except\n\t{}".format(sys.exc_info()[0]))
 
         # 15012015 doen't initialize the pump??
         finally:
@@ -112,9 +112,9 @@ class Pump():
 
         try:
             self.ser.open()
-            print "Opened the Serial port {} successfully".format(self.ser.port)
+            print("Opened the Serial port {} successfully".format(self.ser.port))
         except:
-            print "pump_model>initialize_pump>except\n\t{}".format(sys.exc_info()[0])
+            print("pump_model>initialize_pump>except\n\t{}".format(sys.exc_info()[0]))
             
             pass
 
@@ -142,7 +142,7 @@ class Pump():
             answer = self.send_Command('B', 10)
             self.own_status["valve_pos"] = 'B'
         else:
-            print "pump_model>valve_command>NO SUCH VALUE for position available"
+            print("pump_model>valve_command>NO SUCH VALUE for position available")
         return answer
 
     # Plunger Functions
@@ -153,7 +153,7 @@ class Pump():
             # Sending the Command to the queue
             command = self.correspondance[a_property][0]
             value = "%s" %value
-            print "SENDING THE COMMNAND"
+            print("SENDING THE COMMNAND")
             return_stat = self.send_Command("{}".format(\
                 command + value), 10)
             return return_stat
@@ -184,7 +184,7 @@ class Pump():
                 self.send_Command('A3000')
                 self.own_status["plung_pos_mine"] = 3000
             else:
-                print "pump_model>volume_command>if special::\n\t{}".format(sys.exc_info()[0])
+                print("pump_model>volume_command>if special::\n\t{}".format(sys.exc_info()[0]))
 
         else:
             if not vol.isdigit():
@@ -203,7 +203,7 @@ class Pump():
                     status = self.send_Command(direction + "%s" %steps, 10)
 
             elif direction == 'P':
-                print 'kalimera ***'
+                print('kalimera ***')
                 if self.own_status["plung_pos_mine"] +\
                         steps > self.own_status["steps_tot"]:
                     valid = False
@@ -213,7 +213,7 @@ class Pump():
                     status = self.send_Command(direction + "%s" %steps, 10)
 
             else:
-                print "pump_model>volume_command>elseelsespecial::\n\t{}".format(sys.exc_info()[0])
+                print("pump_model>volume_command>elseelsespecial::\n\t{}".format(sys.exc_info()[0]))
 
         return (valid, status)
             
@@ -227,7 +227,7 @@ class Pump():
         """
 
         self.update_sema.acquire()
-        print "ENTERED THE SEMAPHORE"
+        print("ENTERED THE SEMAPHORE")
         self.update_thread = threading.Thread(\
                 target = self.actual_update_method,\
                 args = (initialize,))
@@ -246,21 +246,21 @@ class Pump():
             self.status["version"] = self.send_Command('?&', 10)[0][3:]
             self.status["checksum"] = self.send_Command('?#', 10)[0][3:]
         except TypeError:
-            print "pump_model>actual_update_method>except::\n\t{}".format(sys.exc_info()[0])
+            print("pump_model>actual_update_method>except::\n\t{}".format(sys.exc_info()[0]))
 
         abs_pos = self.status["absolute_pos"][:-3]
         try:
             if 0 <= int(abs_pos) <= 3000:
                 self.own_status["plung_pos_mine"] = int(abs_pos)
-                print "Plunger Position is set: {}".format(self.own_status["plung_pos_mine"])
+                print("Plunger Position is set: {}".format(self.own_status["plung_pos_mine"]))
             else:
-                print "Out of range value reported by pump!"
+                print("Out of range value reported by pump!")
                 pass
         except ValueError:
-            print "pump_model>actual_update_method>exceptValueError::\n\t{}".format(sys.exc_info()[0])
+            print("pump_model>actual_update_method>exceptValueError::\n\t{}".format(sys.exc_info()[0]))
 
         self.update_sema.release()
-        print "EXITED THE SEMAPHORE"
+        print("EXITED THE SEMAPHORE")
     # Supplementary Functions
     def terminate_execution(self):
         self.send_Command('T')
@@ -268,7 +268,7 @@ class Pump():
         self.update_values() # So that the plunger position may refresh itself
 
     def stop_thread(self, signum=0, fname=0):
-        print "C-c caught!!"
+        print("C-c caught!!")
         self.stop_flag = True
         sys.exit(1)
 
@@ -277,7 +277,7 @@ class Pump():
 
         Must be invoked at the end of the editor commands"""
         self.exc_mode = mode
-        print "the mode has changed to {}".format(self.exc_mode)
+        print("the mode has changed to {}".format(self.exc_mode))
 
     def send_Command(self, command, bits_to_read = 0):
         """Major mechanism for sending the commands to the pump.
@@ -298,13 +298,13 @@ class Pump():
                     answer = self.answers_ret.get(timeout = 1)
                 else:
                     self.answers_ret.get(timeout = 0.5)
-                    print "NO NEED TO READ"
+                    print("NO NEED TO READ")
 
-        except Queue.Empty:
-            print "Answer Queue is empty!!"
+        except queue.Empty:
+            print("Answer Queue is empty!!")
         except:
-            print "ERROR in SEND_COMMAND:"
-            print "pump_model>send_Command::\n\t{}".format(sys.exc_info()[0])
+            print("ERROR in SEND_COMMAND:")
+            print("pump_model>send_Command::\n\t{}".format(sys.exc_info()[0]))
             self.stop_thread()
         finally:
             self.answers_lock.release()
@@ -343,9 +343,9 @@ class delivery_thread(threading.Thread):
                 done, answer = self.push_command(com_to_send, answer)
                 if self.pump.exc_mode == 'interactive':
                     self.forGivingBack.put((answer, done))
-            except Queue.Empty:
+            except queue.Empty:
                 time.sleep(1)
-                print "Questions Queue is empty"
+                print("Questions Queue is empty")
 
     def push_command(self, *QA):
         com_to_send = QA[0]
@@ -359,7 +359,7 @@ class delivery_thread(threading.Thread):
                 answer = self.pump.ser.read(11)
             done = True
             # Fri Dec 19 14:41:57 EET 2014, nickkouk
-            print "com_to_send = \n{0}, {1}, {2}".format(com_to_send, com_to_send[2:6], com_to_send[7:-2])
+            print("com_to_send = \n{0}, {1}, {2}".format(com_to_send, com_to_send[2:6], com_to_send[7:-2]))
             if 'wait' in com_to_send:
                 time.sleep(float(com_to_send[7:-3]))
         else:
@@ -368,7 +368,7 @@ class delivery_thread(threading.Thread):
                 done = False
             else:
                 done = True
-        print "\n\ndone = {0}\nmode = {1}\nquestion = {2}\nanswer = {3}".format(done, self.pump.exc_mode, com_to_send, answer)
+        print("\n\ndone = {0}\nmode = {1}\nquestion = {2}\nanswer = {3}".format(done, self.pump.exc_mode, com_to_send, answer))
         return (done, answer)
 
     def pump_busy(self, *QA):
@@ -381,6 +381,6 @@ class delivery_thread(threading.Thread):
         question = QA[0]
         answer = QA[1]
 
-        print 'The answer is {}'.format(answer)
+        print('The answer is {}'.format(answer))
         if 'o' in answer:
             return True

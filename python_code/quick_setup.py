@@ -10,5 +10,5 @@ def quick_setup():
 
 def status_debug():
     global pump
-    print "TRY #1, no sleep!"
+    print("TRY #1, no sleep!")
     pump.send_Command('A3000')
